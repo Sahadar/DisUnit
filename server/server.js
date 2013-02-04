@@ -2,19 +2,22 @@
 
 var express = require('express'),
 	deferred = require('deferred'),
-	path = require('path');
+	http = require('http'),
+	io = require('socket.io');
 
 var server = null;
 
 (function() {
 	var data = {
-		server : null
+		server : null,
+		io : null
 	};
 
 	server = {
 		startServer : function(port) {
-			var app = express();
+			var app = express()
 
+			//express part
 			app.use(express.logger());
 			app.get('/bind/?', function(req, res) {
 				if(req.path.substr(req.path.length -1, 1) !== "/") {
@@ -36,8 +39,19 @@ var server = null;
 			app.get('/monitor/*', function(req, res) {
 				res.sendfile(req.params[0], { root: "public/monitor/"});
 			});
-			app.listen(port);
+			app = app.listen(port);
+
+			io = io.listen(app);
+			//socketio part
+			io.sockets.on('connection', function (socket) {
+				socket.emit('news', { hello: 'world' });
+				socket.on('hello', function (data) {
+					console.log(data);
+				});
+			});
+
 			data.server = app;
+			data.io = io;
 		},
 		stopServer : function() {
 			if(data.server !== null) {
