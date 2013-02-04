@@ -24,7 +24,7 @@ var socket = null;
 			data.io = io;
 			return io;
 		}
-	}
+	};
 })();
 
 module.exports = socket;
