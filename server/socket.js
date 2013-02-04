@@ -7,7 +7,8 @@ var socket = null;
 
 (function() {
 	var data = {
-		io : null
+		io : null,
+		clients : []
 	};
 
 	socket = {
