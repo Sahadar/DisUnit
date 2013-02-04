@@ -3,7 +3,7 @@
 var express = require('express'),
 	deferred = require('deferred'),
 	http = require('http'),
-	io = require('socket.io');
+	socket = require('./socket');
 
 var server = null;
 
@@ -15,7 +15,8 @@ var server = null;
 
 	server = {
 		startServer : function(port) {
-			var app = express()
+			var app = express(),
+				io = null;
 
 			//express part
 			app.use(express.logger());
@@ -41,14 +42,7 @@ var server = null;
 			});
 			app = app.listen(port);
 
-			io = io.listen(app);
-			//socketio part
-			io.sockets.on('connection', function (socket) {
-				socket.emit('news', { hello: 'world' });
-				socket.on('hello', function (data) {
-					console.log(data);
-				});
-			});
+			io = socket.startSocket(app);
 
 			data.server = app;
 			data.io = io;
@@ -62,4 +56,4 @@ var server = null;
 	}
 })();
 
-module.exports = server
+module.exports = server;
